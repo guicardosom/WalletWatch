@@ -1,11 +1,11 @@
 import React from "react";
 import { View, StyleSheet } from "react-native";
-import LoginComponent from "./src/screens/LoginComponent";
+import LoginScreen from "./src/screens/LoginScreen";
 
 export default App = () => {
   return (
     <View style={styles.container}>
-      <LoginComponent />
+      <LoginScreen />
     </View>
   );
 };

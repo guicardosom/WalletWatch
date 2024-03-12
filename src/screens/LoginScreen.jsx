@@ -8,7 +8,7 @@ import {
 } from "react-native";
 import CustomInputField from "../components/CustomInputField";
 
-const LoginComponent = () => {
+const LoginScreen = () => {
   const [email, setEmail] = useState("");
   const [emailError, setEmailError] = useState("");
   const [password, setPassword] = useState("");
@@ -122,4 +122,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default LoginComponent;
+export default LoginScreen;
