@@ -1,6 +1,6 @@
 import React from "react";
 import { View, StyleSheet } from "react-native";
-import LoginComponent from "./LoginComponent";
+import LoginComponent from "./src/screens/LoginComponent";
 
 export default App = () => {
   return (

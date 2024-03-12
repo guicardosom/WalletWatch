@@ -6,7 +6,7 @@ import {
   TouchableOpacity,
   StyleSheet,
 } from "react-native";
-import CustomInputField from "./CustomInputField";
+import CustomInputField from "../components/CustomInputField";
 
 const LoginComponent = () => {
   const [email, setEmail] = useState("");
