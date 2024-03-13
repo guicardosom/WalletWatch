@@ -1,11 +1,5 @@
 import React, { useState } from "react";
-import {
-  View,
-  Text,
-  TextInput,
-  TouchableOpacity,
-  StyleSheet,
-} from "react-native";
+import { View, Text, Image, TouchableOpacity, StyleSheet } from "react-native";
 import CustomInputField from "../components/CustomInputField";
 
 const LoginScreen = () => {
@@ -44,6 +38,10 @@ const LoginScreen = () => {
   return (
     <View style={styles.outerContainer}>
       <View style={styles.container}>
+        <Image
+          source={require("../../assets/images/WalletWatch-logo.png")}
+          style={styles.logo}
+        />
         <Text style={styles.title}>Welcome!</Text>
         <Text style={styles.instruction}>Log in to continue.</Text>
         <CustomInputField
@@ -88,13 +86,21 @@ const styles = StyleSheet.create({
     alignItems: "center",
     paddingHorizontal: 20,
   },
+  logo: {
+    maxWidth: "100%",
+    height: 60,
+    resizeMode: "contain",
+    marginBottom: 25,
+  },
   title: {
     fontSize: 26,
     fontWeight: "500",
+    fontFamily: "OpenSans",
   },
   instruction: {
     marginVertical: 20,
     fontSize: 14,
+    fontFamily: "OpenSans",
   },
   input: {
     width: "100%",
@@ -119,6 +125,7 @@ const styles = StyleSheet.create({
     color: "#fff",
     fontSize: 18,
     fontWeight: "500",
+    fontFamily: "OpenSans",
   },
 });
 

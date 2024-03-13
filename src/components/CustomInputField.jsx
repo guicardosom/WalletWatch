@@ -132,6 +132,7 @@ const styles = StyleSheet.create({
   },
   label: {
     position: "absolute",
+    fontFamily: "OpenSans",
   },
   inputContainer: {
     flexDirection: "row",
