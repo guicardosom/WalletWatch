@@ -69,6 +69,10 @@ const LoginScreen = () => {
         <TouchableOpacity style={styles.loginButton} onPress={handleLogin}>
           <Text style={styles.buttonText}>Continue</Text>
         </TouchableOpacity>
+        <Text style={styles.signUpText}>
+          Don't have an account?{" "}
+          <Text style={styles.signUpButton}>Sign up</Text>
+        </Text>
       </View>
     </View>
   );
@@ -126,6 +130,16 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: "500",
     fontFamily: "OpenSans",
+  },
+  signUpText: {
+    marginTop: 25,
+    fontSize: 14,
+    fontFamily: "OpenSans",
+  },
+  signUpButton: {
+    fontFamily: "OpenSans",
+    fontSize: 14,
+    color: "#3777bc",
   },
 });
 
