@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { View, Text, Image, TouchableOpacity, StyleSheet } from "react-native";
 import CustomInputField from "../components/CustomInputField";
 
-const LoginScreen = () => {
+const LoginScreen = ({ navigation }) => {
   const [email, setEmail] = useState("");
   const [emailError, setEmailError] = useState("");
   const [password, setPassword] = useState("");
@@ -71,7 +71,12 @@ const LoginScreen = () => {
         </TouchableOpacity>
         <Text style={styles.signUpText}>
           Don't have an account?{" "}
-          <Text style={styles.signUpButton}>Sign up</Text>
+          <Text
+            style={styles.signUpButton}
+            onPress={() => navigation.navigate("Register")}
+          >
+            Sign up
+          </Text>
         </Text>
       </View>
     </View>
