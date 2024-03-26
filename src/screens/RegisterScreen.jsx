@@ -1,6 +1,15 @@
 import React, { useState } from "react";
-import { View, Text, Image, TouchableOpacity, StyleSheet } from "react-native";
+import {
+  View,
+  Text,
+  Image,
+  TouchableOpacity,
+  Alert,
+  StyleSheet,
+} from "react-native";
 import CustomInputField from "../components/CustomInputField";
+import { createUserWithEmailAndPassword } from "firebase/auth";
+import { auth } from "../services/FirebaseSetup";
 
 const RegisterScreen = ({ navigation }) => {
   const [email, setEmail] = useState("");
@@ -8,7 +17,7 @@ const RegisterScreen = ({ navigation }) => {
   const [password, setPassword] = useState("");
   const [passwordError, setPasswordError] = useState("");
 
-  const handleRegister = () => {
+  const handleRegister = async () => {
     setEmailError("");
     setPasswordError("");
 
@@ -25,8 +34,30 @@ const RegisterScreen = ({ navigation }) => {
     }
 
     if (email && isValidEmail(email) && password && password.length >= 8) {
-      // Perform register action
-      console.log("Registered successfully!");
+      try {
+        const userCredential = await createUserWithEmailAndPassword(
+          auth,
+          email,
+          password
+        );
+
+        console.log("Registered successfully!", userCredential.user);
+        Alert.alert(
+          "Registration Successful",
+          "Your account has been successfully created.",
+          [{ text: "OK", onPress: () => navigation.navigate("Login") }]
+        );
+      } catch (error) {
+        console.error("Registration failed:", error.message);
+
+        if (error.code === "auth/email-already-in-use") {
+          setEmailError("Email is already in use.");
+        } else if (error.code === "auth/invalid-email") {
+          setEmailError("Invalid email address.");
+        } else {
+          setEmailError("Registration failed. Please try again later.");
+        }
+      }
     }
   };
 
