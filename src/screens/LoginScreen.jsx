@@ -1,6 +1,8 @@
 import React, { useState } from "react";
 import { View, Text, Image, TouchableOpacity, StyleSheet } from "react-native";
 import CustomInputField from "../components/CustomInputField";
+import { signInWithEmailAndPassword } from "firebase/auth";
+import { auth } from "../services/FirebaseSetup";
 
 const LoginScreen = ({ navigation }) => {
   const [email, setEmail] = useState("");
@@ -8,7 +10,7 @@ const LoginScreen = ({ navigation }) => {
   const [password, setPassword] = useState("");
   const [passwordError, setPasswordError] = useState("");
 
-  const handleLogin = () => {
+  const handleLogin = async () => {
     setEmailError("");
     setPasswordError("");
 
@@ -25,8 +27,25 @@ const LoginScreen = ({ navigation }) => {
     }
 
     if (email && isValidEmail(email) && password && password.length >= 8) {
-      // Perform login action
-      console.log("Login successful!");
+      try {
+        const userCredential = await signInWithEmailAndPassword(
+          auth,
+          email,
+          password
+        );
+        console.log("Login successful!", userCredential.user);
+      } catch (error) {
+        console.error("Login failed:", error.message);
+
+        if (
+          error.code === "auth/user-not-found" ||
+          error.code === "auth/wrong-password"
+        ) {
+          setEmailError("Invalid email or password.");
+        } else {
+          setEmailError("Login failed. Please try again later.");
+        }
+      }
     }
   };
 
