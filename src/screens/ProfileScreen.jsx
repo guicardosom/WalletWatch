@@ -28,7 +28,7 @@ const reducer = (state, action) => {
   }
 };
 
-const EditProfileScreen = ({ navigation }) => {
+const ProfileScreen = ({ navigation }) => {
   const currentUser = auth.currentUser;
   const [state, dispatch] = useReducer(reducer, initialState);
 
@@ -220,4 +220,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default EditProfileScreen;
+export default ProfileScreen;
