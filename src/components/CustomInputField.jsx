@@ -1,4 +1,4 @@
-import { useRef, useState } from "react";
+import { useRef, useState, useEffect } from "react";
 import {
   Animated,
   StyleSheet,
@@ -14,12 +14,20 @@ const CustomInputField = ({
   placeholder,
   onChangeText,
   error,
+  value,
   ...props
 }) => {
   const [isFocused, setIsFocused] = useState(false);
-  const [text, setText] = useState("");
+  const [text, setText] = useState(value || "");
   const [showPassword, setShowPassword] = useState(props.secureTextEntry);
   const labelPosition = useRef(new Animated.Value(text ? 1 : 0)).current;
+
+  useEffect(() => {
+    setText(value || "");
+    if (value) {
+      animatedLabel(1);
+    }
+  }, [value]);
 
   const handleFocus = () => {
     setIsFocused(true);
