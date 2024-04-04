@@ -9,13 +9,14 @@
     "web": "expo start --web"
   },
   "dependencies": {
+    "@expo/vector-icons": "^14.0.0",
     "@react-native-async-storage/async-storage": "^1.21.0",
     "@react-navigation/native": "^6.1.17",
     "@react-navigation/native-stack": "^6.9.26",
     "expo": "~50.0.14",
-    "expo-barcode-scanner": "^12.9.3",
     "expo-camera": "~14.1.1",
     "expo-font": "^11.10.3",
+    "expo-image-picker": "^14.7.1",
     "expo-notifications": "^0.27.6",
     "expo-secure-store": "^12.8.1",
     "expo-status-bar": "~1.11.1",
