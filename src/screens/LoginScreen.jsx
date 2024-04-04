@@ -33,7 +33,17 @@ const LoginScreen = ({ navigation }) => {
           email,
           password
         );
-        console.log("Login successful!", userCredential.user);
+
+        const user = userCredential.user;
+        const isNewUser = checkIfNewUser(user);
+
+        if (isNewUser) {
+          // Redirect to profile for new user
+          navigation.navigate("Profile");
+        } else {
+          // Redirect to dashboard for existing user
+          navigation.navigate("Dashboard");
+        }
       } catch (error) {
         console.error("Login failed:", error.message);
 
@@ -47,6 +57,17 @@ const LoginScreen = ({ navigation }) => {
         }
       }
     }
+  };
+
+  const checkIfNewUser = (user) => {
+    const metadata = user.metadata;
+    const creationTime = new Date(metadata.creationTime).getTime();
+    const lastSignInTime = new Date(metadata.lastSignInTime).getTime();
+    const timeDifference = lastSignInTime - creationTime;
+
+    // If the time difference is very small (e.g., within a few milliseconds),
+    // then the user was just created and is considered a new user
+    return timeDifference < 100; // Adjust the threshold as needed
   };
 
   const isValidEmail = (email) => {

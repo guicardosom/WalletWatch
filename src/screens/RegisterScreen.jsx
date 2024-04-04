@@ -41,7 +41,6 @@ const RegisterScreen = ({ navigation }) => {
           password
         );
 
-        console.log("Registered successfully!", userCredential.user);
         Alert.alert(
           "Registration Successful",
           "Your account has been successfully created.",
