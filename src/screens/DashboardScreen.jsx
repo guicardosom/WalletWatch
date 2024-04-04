@@ -22,18 +22,33 @@ const DashboardScreen = ({ navigation }) => {
     // Simulate fetching recent transactions
     const recentTransactionsData = [
       { id: 1, amount: 100, type: "Income", date: "2024-03-10" },
-      { id: 2, amount: -50, type: "Expense", date: "2024-03-09" },
-      { id: 3, amount: -30, type: "Expense", date: "2024-03-08" },
+      { id: 2, amount: 50, type: "Expense", date: "2024-03-09" },
+      { id: 3, amount: 30, type: "Expense", date: "2024-03-08" },
     ];
     setRecentTransactions(recentTransactionsData);
 
     fetchProfileData();
   }, [currentUser]);
 
+  // Convert totalBalance and monthlyIncome strings to numbers
+  const totalBalance = parseFloat(userProfile?.totalBalance) || 0;
+  const monthlyIncome = parseFloat(userProfile?.monthlyIncome) || 0;
+
+  // Format totalBalance and monthlyIncome as money
+  const formattedTotalBalance = totalBalance.toLocaleString("en-CA", {
+    style: "currency",
+    currency: "CAD",
+  });
+
+  const formattedMonthlyIncome = monthlyIncome.toLocaleString("en-CA", {
+    style: "currency",
+    currency: "CAD",
+  });
+
   return (
     <View style={styles.container}>
       {/* Profile Picture and Greeting */}
-      <View style={styles.profileContainer}>
+      <View style={styles.greetingsContainer}>
         <Image
           source={
             userProfile && userProfile.profileImage
@@ -42,37 +57,62 @@ const DashboardScreen = ({ navigation }) => {
           }
           style={styles.profileImage}
         />
-        <Text style={styles.greeting}>
-          Good afternoon,{" "}
-          {userProfile && `${userProfile.firstName} ${userProfile.lastName}`}!
-        </Text>
-      </View>
-
-      {/* User Information */}
-      <View style={styles.userInfoContainer}>
-        <Text style={styles.userInfoText}>
-          Total Balance: {userProfile && userProfile.totalBalance}
-        </Text>
-        <Text style={styles.userInfoText}>
-          Monthly Income: {userProfile && userProfile.monthlyIncome}
-        </Text>
-        {/* Add calculation for total expenses */}
-      </View>
-
-      {/* Recent Transactions */}
-      <View style={styles.transactionsContainer}>
-        <Text style={styles.transactionsHeader}>Recent Transactions:</Text>
-        {recentTransactions.map((transaction) => (
-          <Text key={transaction.id} style={styles.transactionText}>
-            {transaction.type}: ${transaction.amount} - {transaction.date}
+        <View>
+          <Text style={styles.greeting}>Good afternoon,</Text>
+          <Text style={styles.name}>
+            {userProfile && `${userProfile.firstName} ${userProfile.lastName}`}
           </Text>
-        ))}
-        <TouchableOpacity
-          onPress={() => navigation.navigate("TransactionHistory")}
-          style={styles.seeAllButton}
-        >
-          <Text style={styles.seeAllButtonText}>See All</Text>
-        </TouchableOpacity>
+        </View>
+      </View>
+
+      <View style={styles.contentContainer}>
+        {/* User Information */}
+        <View style={styles.userInfoContainer}>
+          <View>
+            <Text style={styles.labelText}>Total Balance</Text>
+            <Text style={styles.valueText}>{formattedTotalBalance}</Text>
+          </View>
+          <View style={styles.inlineContainer}>
+            <View style={styles.inlineItem}>
+              <View style={styles.iconLabelContainer}>
+                <FontAwesome name="plus-circle" size={18} color="white" />
+                <Text style={styles.labelText}>Income</Text>
+              </View>
+              <Text style={styles.valueText}>{formattedMonthlyIncome}</Text>
+            </View>
+
+            <View style={styles.inlineItem}>
+              <View style={styles.iconLabelContainer}>
+                <FontAwesome name="minus-circle" size={18} color="white" />
+                <Text style={styles.labelText}>Expense</Text>
+              </View>
+              <Text style={styles.valueText}>$0</Text>
+            </View>
+          </View>
+        </View>
+
+        {/* Recent Transactions */}
+        <View style={styles.transactionsContainer}>
+          <View style={styles.transactionsHeaderContainer}>
+            <Text style={styles.transactionsHeader}>Recent Transactions</Text>
+            <TouchableOpacity
+              onPress={() => navigation.navigate("TransactionHistory")}
+            >
+              <Text style={styles.seeAllButtonText}>See All</Text>
+            </TouchableOpacity>
+          </View>
+          {recentTransactions.map((transaction) => (
+            <View key={transaction.id} style={styles.transactionText}>
+              <View style={styles.transactionInfo}>
+                <Text style={styles.transactionType}>{transaction.type}</Text>
+                <Text style={styles.transactionDate}>{transaction.date}</Text>
+              </View>
+              <Text style={styles.transactionAmount}>
+                ${transaction.amount}
+              </Text>
+            </View>
+          ))}
+        </View>
       </View>
 
       {/* Navigation Icons */}
@@ -82,28 +122,28 @@ const DashboardScreen = ({ navigation }) => {
           onPress={() => navigation.navigate("Dashboard")}
         >
           {/* Icon for home */}
-          <FontAwesome name="home" size={24} color="black" />
+          <FontAwesome name="home" size={24} color="white" />
         </TouchableOpacity>
         <TouchableOpacity
           style={styles.navigationIcon}
           onPress={() => navigation.navigate("TransactionHistory")}
         >
           {/* Icon for transactions */}
-          <FontAwesome name="exchange" size={24} color="black" />
+          <FontAwesome name="exchange" size={24} color="white" />
         </TouchableOpacity>
         <TouchableOpacity
           style={styles.navigationIcon}
           onPress={() => navigation.navigate("AddTransaction")}
         >
           {/* Icon for add new transactions */}
-          <FontAwesome name="plus" size={24} color="black" />
+          <FontAwesome name="plus" size={24} color="white" />
         </TouchableOpacity>
         <TouchableOpacity
           style={styles.navigationIcon}
           onPress={() => navigation.navigate("Profile")}
         >
           {/* Icon for profile */}
-          <FontAwesome name="user" size={24} color="black" />
+          <FontAwesome name="user" size={24} color="white" />
         </TouchableOpacity>
       </View>
     </View>
@@ -113,55 +153,116 @@ const DashboardScreen = ({ navigation }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    marginTop: 50,
-    marginHorizontal: 30,
-    //justifyContent: "space-between",
   },
-  profileContainer: {
+  greetingsContainer: {
     flexDirection: "row",
+    justifyContent: "center",
     alignItems: "center",
     marginBottom: 20,
+    backgroundColor: "#3777bc",
+    paddingVertical: 45,
   },
   profileImage: {
-    width: 50,
-    height: 50,
-    borderRadius: 25,
-    marginRight: 10,
+    width: 75,
+    height: 75,
+    borderRadius: 50,
+    marginRight: 25,
   },
   greeting: {
-    fontSize: 18,
+    fontSize: 14,
+    color: "white",
+  },
+  name: {
+    fontSize: 22,
+    color: "white",
+    fontWeight: "bold",
+  },
+  contentContainer: {
+    width: "80%",
+    alignSelf: "center",
+    marginTop: -50,
   },
   userInfoContainer: {
+    backgroundColor: "#5a9bd5",
+    padding: 15,
+    borderRadius: 20,
     marginBottom: 20,
   },
-  userInfoText: {
+  inlineContainer: {
+    flexDirection: "row",
+    justifyContent: "space-around",
+    marginTop: 10,
+  },
+  iconLabelContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+  },
+  inlineItem: {
+    flexDirection: "column",
+    justifyContent: "flex-start",
+    alignItems: "center",
+  },
+  labelText: {
     fontSize: 16,
-    marginBottom: 5,
+    color: "white",
+    paddingLeft: 10,
+    alignSelf: "center",
+  },
+  valueText: {
+    fontSize: 24,
+    color: "white",
+    alignSelf: "center",
+    fontWeight: "bold",
   },
   transactionsContainer: {
-    marginBottom: 20,
+    marginTop: 30,
+  },
+  transactionsHeaderContainer: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    marginBottom: 25,
   },
   transactionsHeader: {
     fontSize: 18,
     fontWeight: "bold",
-    marginBottom: 10,
   },
   transactionText: {
-    fontSize: 16,
-    marginBottom: 5,
-  },
-  seeAllButton: {
-    marginTop: 10,
-  },
-  seeAllButtonText: {
-    color: "blue",
-  },
-  navigationContainer: {
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
+    marginBottom: 10,
+    backgroundColor: "#E3E3E3",
+    borderRadius: 10,
+    paddingVertical: 10,
+    paddingHorizontal: 15,
+  },
+  transactionInfo: {
+    flexDirection: "column",
+    justifyContent: "flex-start",
+    alignItems: "flex-start",
+  },
+  transactionType: {
+    fontSize: 16,
+    fontWeight: "bold",
+  },
+  transactionDate: {
+    fontSize: 12,
+  },
+  transactionAmount: {
+    fontSize: 16,
+    fontWeight: "bold",
+  },
+
+  seeAllButtonText: {
+    color: "#5a9bd5",
+  },
+  navigationContainer: {
+    flexDirection: "row",
+    justifyContent: "space-evenly",
+    alignItems: "center",
     paddingVertical: 15,
-    backgroundColor: "#f0f0f0",
+    backgroundColor: "#3777bc",
     position: "absolute",
     bottom: 0,
     left: 0,
