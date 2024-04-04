@@ -2,12 +2,21 @@ import React, { useState, useEffect } from "react";
 import { View, Text, StyleSheet, TouchableOpacity, Image } from "react-native";
 import { FontAwesome } from "@expo/vector-icons";
 import { firestore, auth } from "../services/FirebaseSetup";
-import { doc, getDoc } from "firebase/firestore";
+import {
+  doc,
+  getDoc,
+  collection,
+  query,
+  where,
+  orderBy,
+  getDocs,
+} from "firebase/firestore";
 
 const DashboardScreen = ({ navigation }) => {
   const currentUser = auth.currentUser;
   const [userProfile, setUserProfile] = useState(null);
   const [recentTransactions, setRecentTransactions] = useState([]);
+  const [totalExpenses, setTotalExpenses] = useState(0);
 
   useEffect(() => {
     const fetchProfileData = async () => {
@@ -19,15 +28,27 @@ const DashboardScreen = ({ navigation }) => {
       }
     };
 
-    // Simulate fetching recent transactions
-    const recentTransactionsData = [
-      { id: 1, amount: 100, type: "Income", date: "2024-03-10" },
-      { id: 2, amount: 50, type: "Expense", date: "2024-03-09" },
-      { id: 3, amount: 30, type: "Expense", date: "2024-03-08" },
-    ];
-    setRecentTransactions(recentTransactionsData);
+    const fetchRecentTransactions = async () => {
+      const transactionCollectionRef = collection(firestore, "transactions");
+      const transactionQuery = query(
+        transactionCollectionRef,
+        where("userId", "==", currentUser.uid),
+        orderBy("date", "desc")
+      );
+      const querySnapshot = await getDocs(transactionQuery);
+      const transactions = [];
+      let totalExpensesTemp = 0;
+      querySnapshot.forEach((doc) => {
+        const transactionData = { id: doc.id, ...doc.data() };
+        transactions.push(transactionData);
+        totalExpensesTemp += parseFloat(transactionData.amount);
+      });
+      setTotalExpenses(totalExpensesTemp);
+      setRecentTransactions(transactions.slice(0, 4)); // Limiting to 4 recent transactions
+    };
 
     fetchProfileData();
+    fetchRecentTransactions();
   }, [currentUser]);
 
   // Convert totalBalance and monthlyIncome strings to numbers
@@ -86,7 +107,12 @@ const DashboardScreen = ({ navigation }) => {
                 <FontAwesome name="minus-circle" size={18} color="white" />
                 <Text style={styles.labelText}>Expense</Text>
               </View>
-              <Text style={styles.valueText}>$0</Text>
+              <Text style={styles.valueText}>
+                {totalExpenses.toLocaleString("en-CA", {
+                  style: "currency",
+                  currency: "CAD",
+                })}
+              </Text>
             </View>
           </View>
         </View>
@@ -108,7 +134,10 @@ const DashboardScreen = ({ navigation }) => {
                 <Text style={styles.transactionDate}>{transaction.date}</Text>
               </View>
               <Text style={styles.transactionAmount}>
-                ${transaction.amount}
+                {parseFloat(transaction.amount).toLocaleString("en-CA", {
+                  style: "currency",
+                  currency: "CAD",
+                })}
               </Text>
             </View>
           ))}
@@ -253,7 +282,6 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: "bold",
   },
-
   seeAllButtonText: {
     color: "#5a9bd5",
   },
