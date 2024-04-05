@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { View, Text, StyleSheet, TouchableOpacity, Image } from "react-native";
 import { FontAwesome } from "@expo/vector-icons";
+import * as Notifications from "expo-notifications";
 import { firestore, auth } from "../services/FirebaseSetup";
 import {
   doc,
@@ -11,6 +12,14 @@ import {
   orderBy,
   getDocs,
 } from "firebase/firestore";
+
+Notifications.setNotificationHandler({
+  handleNotification: async () => ({
+    shouldShowAlert: true,
+    shouldPlaySound: true,
+    shouldSetBadge: false,
+  }),
+});
 
 const DashboardScreen = ({ navigation }) => {
   const currentUser = auth.currentUser;
@@ -50,6 +59,47 @@ const DashboardScreen = ({ navigation }) => {
     fetchProfileData();
     fetchRecentTransactions();
   }, [currentUser]);
+
+  // Request notification permissions when component mounts
+  useEffect(() => {
+    const requestPermissions = async () => {
+      try {
+        const { status } = await Notifications.requestPermissionsAsync();
+        if (status !== "granted") {
+          console.log("Notification permissions not granted");
+        } else {
+          console.log("Notification permissions granted");
+        }
+      } catch (error) {
+        console.error("Failed to request notification permissions:", error);
+      }
+    };
+
+    requestPermissions();
+  }, [Notifications]);
+
+  useEffect(() => {
+    if (totalExpenses > monthlyIncome) {
+      sendNotification();
+    }
+  }, [totalExpenses, monthlyIncome]);
+
+  const sendNotification = async (
+    title = "Expenses Exceeded!",
+    body = "Your expenses have exceeded your income."
+  ) => {
+    try {
+      await Notifications.scheduleNotificationAsync({
+        content: {
+          title,
+          body,
+        },
+        trigger: null,
+      });
+    } catch (error) {
+      console.error("Failed to schedule notification:", error);
+    }
+  };
 
   // Convert totalBalance and monthlyIncome strings to numbers
   const totalBalance = parseFloat(userProfile?.totalBalance) || 0;
